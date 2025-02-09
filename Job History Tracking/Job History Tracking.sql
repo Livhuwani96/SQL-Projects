@@ -27,7 +27,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE PROCEDURE [maint].[pSQL_JobHistory]
+CREATE PROCEDURE [maint].[pSQL_JHistory]
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -57,13 +57,13 @@ BEGIN
         msdb.dbo.sysjobhistory jh ON jv.job_id = jh.job_id
     WHERE 
         jh.step_name <> '(Job outcome)' -- Exclude summary step
-        AND CONVERT(DATE, FORMAT(jh.run_date, '0000-00-00')) = CAST(GETDATE() AS DATE) -- Only today’s jobs
+        AND CONVERT(DATE, FORMAT(jh.run_date, '0000-00-00')) = CAST(GETDATE() AS DATE) -- Only todayâ€™s jobs
     GROUP BY 
         jv.name,
         jh.run_date;
 
     -- Use MERGE to update existing records or insert new ones
-    MERGE dbo.SQL_JobHistory AS Target
+    MERGE dbo.SQL_JHistory AS Target
     USING @JobHistory AS Source
     ON Target.JobName = Source.JobName 
     AND Target.RunDate = Source.RunDate -- Matching on job name and run date
